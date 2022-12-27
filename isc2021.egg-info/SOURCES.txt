@@ -1,0 +1,13 @@
+LICENSE
+README.md
+setup.py
+isc/__init__.py
+isc/descriptor_matching.py
+isc/html.py
+isc/io.py
+isc/metrics.py
+isc2021.egg-info/PKG-INFO
+isc2021.egg-info/SOURCES.txt
+isc2021.egg-info/dependency_links.txt
+isc2021.egg-info/requires.txt
+isc2021.egg-info/top_level.txt

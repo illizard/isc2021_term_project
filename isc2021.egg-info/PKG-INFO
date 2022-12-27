@@ -1,0 +1,12 @@
+Metadata-Version: 2.1
+Name: isc2021
+Version: 0.0.1
+Summary: Code for the image similarity challenge at NeurIPS 2021
+Home-page: https://github.com/facebookresearch/isc2021
+Author: Matthijs Douze
+Author-email: matthijs@fb.com
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.5
+License-File: LICENSE

@@ -39,7 +39,7 @@ if __name__ == "__main__":
 
     group = parser.add_argument_group("output")
     aa("--o", default="/tmp/preds.csv", help="write predictions to this output file")
-    aa("--max_results", default=500_000, type=int, help="max number of accepted predictions")
+    aa("--max_results", default=500000, type=int, help="max number of accepted predictions")
     aa("--norms", help="write the nromalization factors (for debugging)")
 
     args = parser.parse_args()

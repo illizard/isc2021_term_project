@@ -23,7 +23,7 @@ import faiss
 import tempfile
 import numpy as np
 import h5py
-
+import timm
 
 def load_model(name, checkpoint_file):
     if name == "zoo_resnet50":
@@ -44,14 +44,26 @@ def load_model(name, checkpoint_file):
         model.eval()
         return model
 
+    if name == "ssl_resnet50":
+        model = timm.create_model('ssl_resnet50', pretrained=True)
+        st = torch.load('/root/.cache/torch/hub/checkpoints/semi_supervised_resnet50-08389792.pth')
+        # print(st.keys())
+        # state_dict = OrderedDict([
+        #     (name[9:], v)
+        #     for name, v in st["model_state"].items() if name.startswith("features.")
+        # ])
+        model.fc
+        model.fc = None
+        #model.load_state_dict(state_dict)
+        model.load_state_dict(st)
+        model.eval()
+        return model
     assert False
-
-
 
 def resnet_activation_map(self, x):
     x = self.conv1(x)
     x = self.bn1(x)
-    x = self.relu(x)
+    x = self.act1(x)
     x = self.maxpool(x)
 
     x = self.layer1(x)
@@ -91,12 +103,11 @@ class ImageList(Dataset):
 
 
 def main():
-
+    torch.multiprocessing.set_sharing_strategy('file_system')
     parser = argparse.ArgumentParser()
 
     def aa(*args, **kwargs):
         group.add_argument(*args, **kwargs)
-
 
 
     group = parser.add_argument_group('feature extraction options')
@@ -104,9 +115,9 @@ def main():
     aa('--train_pca', default=False, action="store_true", help="run PCA training")
     aa('--pca_file', default="", help="File with PCA descriptors")
     aa('--pca_dim', default=1500, type=int, help="output dimension for PCA")
-    aa('--device', default="cuda:0", help='pytroch device')
+    aa('--device', default="cuda", help='pytroch device')
     aa('--batch_size', default=64, type=int, help="max batch size to use for extraction")
-    aa('--num_workers', default=20, type=int, help="nb of dataloader workers")
+    aa('--num_workers', default=0, type=int, help="nb of dataloader workers")
 
     group = parser.add_argument_group('model options')
     aa('--model', default='multigrain_resnet50', help="model to use")
@@ -117,7 +128,7 @@ def main():
 
     group = parser.add_argument_group('dataset options')
     aa('--file_list', required=True, help="CSV file with image filenames")
-    aa('--image_dir', default="", help="search image files in these directories")
+    aa('--image_dir', default="images/train", help="search image files in these directories")
     aa('--n_train_pca', default=10000, type=int, help="nb of training vectors for the PCA")
     aa('--i0', default=0, type=int, help="first image to process")
     aa('--i1', default=-1, type=int, help="last image to process + 1")
@@ -187,9 +198,15 @@ def main():
     transforms = torchvision.transforms.Compose(transforms)
 
     im_dataset = ImageList(image_list, transform=transforms, imsize=args.imsize)
+    print(args.image_dir)
 
     print("loading model")
     net = load_model(args.model, args.checkpoint)
+    # if torch.cuda.device_count() > 1:
+    #     print(torch.cuda.device_count())
+
+    #     net = torch.nn.DataParallel(net)
+    
     net.to(args.device)
 
     print("computing features")
@@ -259,7 +276,6 @@ def main():
 
     t1 = time.time()
 
-    print()
     print(f"image_description_time: {(t1 - t0) / len(image_list):.5f} s per image")
 
     if args.train_pca:
@@ -285,6 +301,5 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
+    # name = "ssl_resnet50"
+    # load_model(name)

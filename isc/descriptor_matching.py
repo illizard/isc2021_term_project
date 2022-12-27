@@ -38,7 +38,7 @@ def threshold_radius_nres_IP(nres, dis, ids, thresh):
     return new_nres, dis[mask], ids[mask]
 
 
-def apply_maxres_IP(res_batches, target_nres):
+def apply_maxres_IP(res_batches, target_nres, keep_max=False):
     """find radius that reduces number of results to target_nres, and
     applies it in-place to the result batches used in range_search_max_results"""
     alldis = np.hstack([dis for _, dis, _ in res_batches])
