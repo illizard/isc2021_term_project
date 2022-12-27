@@ -22,7 +22,7 @@ root@9e23863b293e:/isc2021_term_project#bash run.sh
 
 #!bin/bash
 ############# CONFIG #############
-MODEL='resnetv2_152x4_bitm_in21k'
+MODEL='ssl_resnet50'
 BATCH_SIZE=32
 echo $MODEL
 
@@ -30,7 +30,7 @@ echo $MODEL
 python baselines/GeM_baseline.py \
     --model $MODEL \
     --file_list list_files/train \
-    --checkpoint /root/.cache/torch/hub/checkpoints/BiT-M-R152x4.npz \
+    --checkpoint /root/.cache/torch/hub/checkpoints/semi_supervised_resnet50-08389792.pth \
     --image_dir images/train \
     --pca_file data/pca_$MODEL.vt \
     --n_train_pca 10000 \
@@ -40,6 +40,7 @@ python baselines/GeM_baseline.py \
 ############# dev queries #############
 python baselines/GeM_baseline.py \
     --model $MODEL \
+    --checkpoint /root/.cache/torch/hub/checkpoints/semi_supervised_resnet50-08389792.pth \
     --batch_size $BATCH_SIZE \
     --file_list list_files/dev_queries \
     --image_dir images/dev_queries \
@@ -49,6 +50,7 @@ python baselines/GeM_baseline.py \
 ############# final queries #############
 python baselines/GeM_baseline.py \
     --model $MODEL \
+    --checkpoint /root/.cache/torch/hub/checkpoints/semi_supervised_resnet50-08389792.pth \
     --batch_size $BATCH_SIZE \
     --file_list list_files/final_queries \
     --image_dir images/final_queries \
@@ -57,21 +59,23 @@ python baselines/GeM_baseline.py \
 
 ############ reference #############
 python baselines/GeM_baseline.py \
-   --model $MODEL \
-   --batch_size $BATCH_SIZE \
-   --file_list list_files/references \
-   --image_dir images/references \
-   --o data/references_${MODEL}.hdf5 \
-   --pca_file data/pca_${MODEL}.vt
+    --model $MODEL \
+    --checkpoint /root/.cache/torch/hub/checkpoints/semi_supervised_resnet50-08389792.pth \
+    --batch_size $BATCH_SIZE \
+    --file_list list_files/references \
+    --image_dir images/references \
+    --o data/references_${MODEL}.hdf5 \
+    --pca_file data/pca_${MODEL}.vt
 
 ############# train #############
 python baselines/GeM_baseline.py \
-   --model $MODEL \
-   --batch_size $BATCH_SIZE \
-   --file_list list_files/train \
-   --image_dir images/train \
-   --o data/train_${MODEL}.hdf5 \
-   --pca_file data/pca_${MODEL}.vt
+    --model $MODEL \
+    --checkpoint /root/.cache/torch/hub/checkpoints/semi_supervised_resnet50-08389792.pth \
+    --batch_size $BATCH_SIZE \
+    --file_list list_files/train \
+    --image_dir images/train \
+    --o data/train_${MODEL}.hdf5 \
+    --pca_file data/pca_${MODEL}.vt
 
 #############################################
 
