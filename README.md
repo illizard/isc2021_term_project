@@ -1,37 +1,74 @@
-# ISC 2021
+# ISC 2021 Term Project
 
-This repository contains code for the Image Similarity Challenge 2021.
+Status: Not started
 
-## Getting started 
+This repository contains code for the Image Similarity Challenge 2021.****
 
-The [docs](docs) subdirectory has step-by-step instructions on how to reproduce the baseline 
-results from the paper. 
+[https://github.com/facebookresearch/isc2021](https://github.com/facebookresearch/isc2021)
 
-Update (2022-02-08): The data is publicly available at: https://sites.google.com/view/isc2021/dataset
+# **Getting started**
 
-## Reference paper
+The [docs](https://github.com/facebookresearch/isc2021/blob/main/docs)  subdirectory has step-by-step instructions on how to reproduce the baseline results from the paper.
 
-The competition is described in this paper:  https://arxiv.org/abs/2106.09672
+# Run script
 
-BibTeX reference:
-```bibtex
-@ARTICLE{ISC2021,
-       author = {
-       Matthijs Douze and Giorgos Tolias and Zo\"e Papakipos and Ed Pizzi and 
-       Lowik Chanussot and Filip Radenovic and Tomas Jenicek and 
-       Maxim Maximov and Laura Leal-Taix\'e and Ismail Elezi and 
-       Ondřej Chum and Cristian Canton Ferrer       
-       },
-        title = "{The 2021 Image Similarity Dataset and Challenge}",
-      journal = {arXiv e-prints},
-         year = "2021",
-}
+```bash
+root@9e23863b293e:/isc2021_term_project#bash run.sh
 ```
 
-## Contributing
-See the [CONTRIBUTING](CONTRIBUTING.md) file for how to help out.
+```bash
+####### run.sh ##########
 
-## License
-ISC2021 is [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) licensed, as found in the LICENSE file.
+#!bin/bash
+MODEL='ssl_resnet50'
+echo $MODEL
+############# Query #############
+# python baselines/GeM_baseline.py \
+#     --model MODEL \
+#     --file_list list_files/dev_queries \
+#     --image_dir images/dev_queries \
+#     --o data/queries_ssl_resnet50.hdf5 \
+#     --pca_file data/pca_ssl_resnet50.vt
 
-The majority of ISC2021 is licensed under CC-BY-NC, however portions of the project are available under separate license terms: lear_gist1.2  is licensed under the PSF license.
+############ Reference #############
+python baselines/GeM_baseline.py \
+   --model $MODEL \
+   --batch_size 32 \
+   --file_list list_files/references \
+   --image_dir images/references \
+   --o data/references_${MODEL}.hdf5 \
+   --pca_file data/pca_${MODEL}.vt
+
+# ############# Train #############
+# python baselines/GeM_baseline.py \
+#     --model ssl_resnet50 \
+#     --file_list list_files/train \
+#     --image_dir images/train \
+#     --o data/train_ssl_resnet50.hdf5 \
+#     --pca_file data/pca_ssl_resnet50.vt
+
+############# dev q score_normalization #############
+python scripts/score_normalization.py \
+    --query_descs data/dev_queries_${MODEL}.hdf5 \
+    --db_descs data/references_${MODEL}.hdf5 \
+    --train_descs data/train_${MODEL}.hdf5 \
+    --factor 2.0 --n 10 \
+    --o data/predictions_dev_queries_normalized_${MODEL}.csv
+
+############# final q score_normalization #############
+python scripts/score_normalization.py \
+    --query_descs data/final_queries_${MODEL}.hdf5 \
+    --db_descs data/references_${MODEL}.hdf5 \
+    --train_descs data/train_${MODEL}.hdf5 \
+    --factor 2.0 --n 10 \
+    --o data/predictions_final_queries_normalized_${MODEL}.csv
+
+# ############# evaluate  #############
+# python scripts/compute_metrics.py \
+#     --preds_filepath data/predictions_dev_queries_normalized.csv \
+#     --gt_filepath list_files/dev_ground_truth.csv
+```
+
+# Result
+
+![Untitled](ISC%202021%20Term%20Project%200350a50634344094908984ec161a30ec/Untitled.png)
