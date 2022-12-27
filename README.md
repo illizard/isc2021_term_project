@@ -26,7 +26,7 @@ MODEL='resnetv2_152x4_bitm_in21k'
 BATCH_SIZE=32
 echo $MODEL
 
-############# FEATURE EXTRACTING #############
+############# PCA Whitening #############
 python baselines/GeM_baseline.py \
          --file_list list_files/train \
          --image_dir images/train \
