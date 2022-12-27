@@ -10,13 +10,13 @@ This repository contains code for the Image Similarity Challenge 2021.****
 
 The [docs](https://github.com/facebookresearch/isc2021/blob/main/docs)  subdirectory has step-by-step instructions on how to reproduce the baseline results from the paper.
 
-# Run script
+### Run script
 
 ```bash
 root@9e23863b293e:/isc2021_term_project#bash run.sh
 ```
 
-# Script
+### Script
 
 ```bash
 ############ run.sh ##############
@@ -89,7 +89,7 @@ python scripts/compute_metrics.py \
     --gt_filepath list_files/dev_ground_truth.csv
 ```
 
-# Result
+### Result
 
 ```bash
 root@9e23863b293e:/isc2021_term_project#bash run.sh
