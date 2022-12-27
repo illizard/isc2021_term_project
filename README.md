@@ -17,37 +17,55 @@ root@9e23863b293e:/isc2021_term_project#bash run.sh
 ```
 
 ```bash
-####### run.sh ##########
+############ run.sh ##############
+##################################
 
 #!bin/bash
+############# CONFIG #############
 MODEL='ssl_resnet50'
+BATCH_SIZE=32
 echo $MODEL
-############# Query #############
-# python baselines/GeM_baseline.py \
-#     --model MODEL \
-#     --file_list list_files/dev_queries \
-#     --image_dir images/dev_queries \
-#     --o data/queries_ssl_resnet50.hdf5 \
-#     --pca_file data/pca_ssl_resnet50.vt
 
-############ Reference #############
+############# FEATURE EXTRACTING #############
+############# dev queries #############
+python baselines/GeM_baseline.py \
+    --model $MODEL \
+    --batch_size $BATCH_SIZE \
+    --file_list list_files/dev_queries \
+    --image_dir images/dev_queries \
+    --o data/dev_queries_ssl_resnet50.hdf5 \
+    --pca_file data/pca_ssl_resnet50.vt
+
+############# final queries #############
+python baselines/GeM_baseline.py \
+    --model $MODEL \
+    --batch_size $BATCH_SIZE \
+    --file_list list_files/final_queries \
+    --image_dir images/final_queries \
+    --o data/final_queries_ssl_resnet50.hdf5 \
+    --pca_file data/pca_ssl_resnet50.vt
+
+############ reference #############
 python baselines/GeM_baseline.py \
    --model $MODEL \
-   --batch_size 32 \
+   --batch_size $BATCH_SIZE \
    --file_list list_files/references \
    --image_dir images/references \
    --o data/references_${MODEL}.hdf5 \
    --pca_file data/pca_${MODEL}.vt
 
-# ############# Train #############
-# python baselines/GeM_baseline.py \
-#     --model ssl_resnet50 \
-#     --file_list list_files/train \
-#     --image_dir images/train \
-#     --o data/train_ssl_resnet50.hdf5 \
-#     --pca_file data/pca_ssl_resnet50.vt
+############# train #############
+python baselines/GeM_baseline.py \
+   --model $MODEL \
+   --batch_size $BATCH_SIZE \
+   --file_list list_files/train \
+   --image_dir images/train \
+   --o data/train_${MODEL}.hdf5 \
+   --pca_file data/pca_${MODEL}.vt
+######################################
 
-############# dev q score_normalization #############
+############# EVALUATION #############
+############# dev queries score normalization #############
 python scripts/score_normalization.py \
     --query_descs data/dev_queries_${MODEL}.hdf5 \
     --db_descs data/references_${MODEL}.hdf5 \
@@ -55,7 +73,7 @@ python scripts/score_normalization.py \
     --factor 2.0 --n 10 \
     --o data/predictions_dev_queries_normalized_${MODEL}.csv
 
-############# final q score_normalization #############
+############# final queries score normalization #############
 python scripts/score_normalization.py \
     --query_descs data/final_queries_${MODEL}.hdf5 \
     --db_descs data/references_${MODEL}.hdf5 \
@@ -63,12 +81,20 @@ python scripts/score_normalization.py \
     --factor 2.0 --n 10 \
     --o data/predictions_final_queries_normalized_${MODEL}.csv
 
-# ############# evaluate  #############
-# python scripts/compute_metrics.py \
-#     --preds_filepath data/predictions_dev_queries_normalized.csv \
-#     --gt_filepath list_files/dev_ground_truth.csv
+############# evaluate  #############
+python scripts/compute_metrics.py \
+    --preds_filepath data/predictions_dev_queries_normalized_${MODEL}.csv \
+    --gt_filepath list_files/dev_ground_truth.csv
 ```
 
 # Result
 
-![Untitled](ISC%202021%20Term%20Project%200350a50634344094908984ec161a30ec/Untitled.png)
+```bash
+root@9e23863b293e:/isc2021_term_project#bash run.sh
+Track 1 result of 500000 predictions (5000 GT matches)
+Average Precision: 0.41759
+Recall at P90    : 0.16400
+Threshold at P90 : 0.16499
+Recall at rank 1:  0.51340
+Recall at rank 10: 0.59000
+```
