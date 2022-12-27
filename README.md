@@ -17,9 +17,6 @@ root@9e23863b293e:/isc2021_term_project#bash run.sh
 ```
 
 ```bash
-############# run.sh #############
-##################################
-
 #!bin/bash
 ############# CONFIG #############
 MODEL='resnetv2_152x4_bitm_in21k'
