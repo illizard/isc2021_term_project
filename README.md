@@ -28,11 +28,13 @@ echo $MODEL
 
 ############# PCA Whitening #############
 python baselines/GeM_baseline.py \
-         --file_list list_files/train \
-         --image_dir images/train \
-         --pca_file data/pca_$MODEL.vt \
-         --n_train_pca 10000 \
-         --train_pca
+    --model $MODEL \
+    --file_list list_files/train \
+    --checkpoint /root/.cache/torch/hub/checkpoints/BiT-M-R152x4.npz \
+    --image_dir images/train \
+    --pca_file data/pca_$MODEL.vt \
+    --n_train_pca 10000 \
+    --train_pca
          
 ############# FEATURE EXTRACTING #############
 ############# dev queries #############
