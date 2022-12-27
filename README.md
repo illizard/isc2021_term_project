@@ -10,24 +10,27 @@ This repository contains code for the Image Similarity Challenge 2021.****
 
 The [docs](https://github.com/facebookresearch/isc2021/blob/main/docs)  subdirectory has step-by-step instructions on how to reproduce the baseline results from the paper.
 
-### Run script
+# Run script
 
 ```bash
 root@9e23863b293e:/isc2021_term_project#bash run.sh
 ```
 
-### Script
-
 ```bash
-############ run.sh ##############
-##################################
-
 #!bin/bash
 ############# CONFIG #############
-MODEL='ssl_resnet50'
+MODEL='resnetv2_152x4_bitm_in21k'
 BATCH_SIZE=32
 echo $MODEL
 
+############# FEATURE EXTRACTING #############
+python baselines/GeM_baseline.py \
+         --file_list list_files/train \
+         --image_dir images/train \
+         --pca_file data/pca_$MODEL.vt \
+         --n_train_pca 10000 \
+         --train_pca
+         
 ############# FEATURE EXTRACTING #############
 ############# dev queries #############
 python baselines/GeM_baseline.py \
@@ -36,7 +39,7 @@ python baselines/GeM_baseline.py \
     --file_list list_files/dev_queries \
     --image_dir images/dev_queries \
     --o data/dev_queries_ssl_resnet50.hdf5 \
-    --pca_file data/pca_ssl_resnet50.vt
+    --pca_file data/pca_$MODEL.vt
 
 ############# final queries #############
 python baselines/GeM_baseline.py \
@@ -45,7 +48,7 @@ python baselines/GeM_baseline.py \
     --file_list list_files/final_queries \
     --image_dir images/final_queries \
     --o data/final_queries_ssl_resnet50.hdf5 \
-    --pca_file data/pca_ssl_resnet50.vt
+    --pca_file data/pca_$MODEL.vt
 
 ############ reference #############
 python baselines/GeM_baseline.py \
@@ -64,7 +67,8 @@ python baselines/GeM_baseline.py \
    --image_dir images/train \
    --o data/train_${MODEL}.hdf5 \
    --pca_file data/pca_${MODEL}.vt
-######################################
+
+#############################################
 
 ############# EVALUATION #############
 ############# dev queries score normalization #############
@@ -89,7 +93,7 @@ python scripts/compute_metrics.py \
     --gt_filepath list_files/dev_ground_truth.csv
 ```
 
-### Result
+# Result
 
 ```bash
 root@9e23863b293e:/isc2021_term_project#bash run.sh
